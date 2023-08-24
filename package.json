@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf build && cd /Users/linkeming/Documents/GitHub/full-stack-open/part2/phoneBook/phonebook && npm run build && cp -r build /Users/linkeming/Documents/GitHub/full-stack-open/part2/phoneBook/phonebook",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "author": "",
   "license": "ISC",
