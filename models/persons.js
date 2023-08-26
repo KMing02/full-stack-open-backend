@@ -7,8 +7,7 @@ const url = process.env.MONGODB_URI
 console.log('connecting to', url)
 
 mongoose.connect(url)
-
-  .then(result => {
+    .then(result => {
     console.log('connected to MongoDB')
   })
   .catch((error) => {
@@ -17,7 +16,7 @@ mongoose.connect(url)
 
 const entrySchema = new mongoose.Schema({
   name: String,
-  number: Boolean,
+  number: String,
 })
 
 entrySchema.set('toJSON', {
@@ -29,4 +28,4 @@ entrySchema.set('toJSON', {
 })
 
 
-module.exports = mongoose.model('Entry', entrySchema)
+module.exports = mongoose.model('phone', entrySchema)

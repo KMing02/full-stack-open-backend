@@ -1,8 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
-const Entry = require('./models/persons')
+const Phone = require('./models/persons')
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -25,7 +26,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 
 app.get('/api/persons', (request, response) => {
-  Entry.find({}).then(entries => {
+  Phone.find({}).then(entries => {
     response.json(entries)
   })
 })
@@ -35,27 +36,18 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(note => note.id === id)
-    if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
+  const id = request.params.id
+  Phone.findById({id}).then(entry => {
+      response.json(entry)
+    })
   })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-
+    const id = request.params.id
+    Phone.deleteOne(entry => {id === entry.id})
     response.status(204).end()
 })
 
-
-const generateId = () => {
-    const randId = Math.floor(Math.random() * 10000)
-    return randId
-  }
   
 app.post('/api/persons', (request, response) => {
     const body = request.body
@@ -65,20 +57,14 @@ app.post('/api/persons', (request, response) => {
         error: 'content missing' 
       })
     }
-    if (persons.find(p => p.name === body.name)) {
-        return response.status(400).json({ 
-          error: 'name must be unique' 
-        })
-    }  
   
-    const person = {
+    const person = new Note({
       name: body.name,
-      number: body.number || false,
-      id: generateId(),
-    }
-  
-    persons = persons.concat(person)
-    response.json(person)
+      number: body.number,
+    })
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
   })
 
 
