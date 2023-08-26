@@ -43,8 +43,7 @@ app.get('/api/persons/:id', (request, response) => {
   })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    Phone.deleteOne(entry => {id === entry.id})
+    Phone.deleteOne({id: request.params.id})
     response.status(204).end()
 })
 
@@ -58,7 +57,7 @@ app.post('/api/persons', (request, response) => {
       })
     }
   
-    const person = new Note({
+    const person = new Phone({
       name: body.name,
       number: body.number,
     })
