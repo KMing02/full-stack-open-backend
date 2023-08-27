@@ -43,8 +43,10 @@ app.get('/api/persons/:id', (request, response) => {
   })
 
 app.delete('/api/persons/:id', (request, response) => {
-    Phone.deleteOne({id: request.params.id})
+  Phone.findByIdAndRemove(request.params.id)
+    .then(result => {
     response.status(204).end()
+  })
 })
 
   
