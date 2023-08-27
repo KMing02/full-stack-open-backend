@@ -31,13 +31,14 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/info', (request, response) => {
-    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date}</p>`)
+app.get('/info', async (request, response) => {
+  const count = await Phone.countDocuments()
+  response.send(`<p>Phonebook has info for ${count} people</p><p>${new Date}</p>`)
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
-  Phone.findById({id}).then(entry => {
+  Phone.findById(id).then(entry => {
       if (entry) {
         response.json(entry)
       } else {
