@@ -57,7 +57,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
   
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
   
     if (!body.number || !body.name) {
@@ -74,7 +74,7 @@ app.post('/api/persons', (request, response) => {
     .then(savedPerson => {
       response.json(savedPerson)
     })
-    .catch(errorHandler)
+    .catch(error => errorHandler(error))
   })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -85,7 +85,10 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number
   }
 
-  Phone.findByIdAndUpdate(request.params.id, entry, {new: true})
+  Phone.findByIdAndUpdate(
+    request.params.id, 
+    entry, 
+    {new: true, runValidators: true, context: 'query'})
   .then(updatedEntry => {
     response.json(updatedEntry)
   })
