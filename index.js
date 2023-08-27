@@ -35,18 +35,24 @@ app.get('/info', (request, response) => {
     response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date}</p>`)
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
   Phone.findById({id}).then(entry => {
-      response.json(entry)
+      if (entry) {
+        response.json(entry)
+      } else {
+        response.status(404).end()
+      }
     })
+    .catch(error => next(error))
   })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Phone.findByIdAndRemove(request.params.id)
     .then(result => {
     response.status(204).end()
   })
+    .catch(error => next(error))
 })
 
   
@@ -63,11 +69,40 @@ app.post('/api/persons', (request, response) => {
       name: body.name,
       number: body.number,
     })
-    person.save().then(savedPerson => {
+    person.save()
+    .then(savedPerson => {
       response.json(savedPerson)
     })
+    .catch(errorHandler)
   })
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+
+  const entry = {
+    name: body.name,
+    number: body.number
+  }
+
+  Phone.findByIdAndUpdate(request.params.id, entry, {new: true})
+  .then(updatedEntry => {
+    response.json(updatedEntry)
+  })
+  .catch(error => next(error))
+})
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+// this has to be the last loaded middleware.
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
   app.listen(PORT, () => {
